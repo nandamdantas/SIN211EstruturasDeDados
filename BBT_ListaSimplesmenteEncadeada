@@ -1,0 +1,247 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct sNo{
+    char info;
+    struct sNo *prox;
+}NO;
+
+
+NO* lse_inicializar(NO* lista){
+   lista = NULL;
+return lista;
+}
+
+NO* lse_alocarNo(){
+  return (NO*) malloc (sizeof(NO*));
+}
+
+void lse_desalocarNo(NO* q){
+  free(q);
+}
+
+int lse_vazia(NO* ptrLista){
+   if(ptrLista == NULL){
+    return 1; //lista vazia
+   }
+   else{
+    return 0;
+   }
+}
+
+void lse_inserirNoInicio(NO **lista, char elem){
+    NO* novo;
+    novo = lse_alocarNo();
+
+    if(novo!=NULL){
+
+        novo->info = elem;
+        novo->prox = *lista;
+
+        *lista = novo;
+    }
+    else{
+        printf("\nErro na alocacao de no!");
+   }
+}
+
+void lse_inserirNoFim(NO **lista, char elem){
+   NO* novo;
+   NO* aux;
+
+   novo = lse_alocarNo();
+
+   if(novo!=NULL){
+
+      novo->info = elem;
+      novo->prox = NULL;
+
+   if(lse_vazia(*lista)==1){
+
+      *lista = novo;
+   }
+   else{ //percorrer lista
+        aux = *lista;
+        while(aux->prox!=NULL){
+            aux = aux->prox;
+            aux->prox = novo;
+        }
+   }
+   }
+     else{
+        printf("\nErro na alocacao do no!");
+
+     }
+}
+
+NO* lse_pesquisar(NO* lista, char elem){
+
+   NO* aux;
+   
+   if(lse_vazia(lista)!=0){
+    while(aux!=NULL){
+        if(aux->info==elem){
+            return aux; //encontrou o nó
+            aux = aux->prox;
+        }
+    }
+   }
+return NULL; //lista vazia ou não encontrou o elemento
+}
+
+ NO* lse_pesquisarMovendoParaFrente(NO* lista, char elem){
+
+      NO* q;
+
+      if((lse_pesquisar(lista, elem)) != NULL){
+        lse_alocarNo(q);
+        q->info = elem;
+        lista->prox = q;
+        q->prox = lista;
+        return q;
+        lse_desalocarNo(q);
+      }
+      else{
+        return NULL;
+      }
+ }
+
+NO* lse_pesquisarPorTransposicao(NO *lista, int elem){
+        NO* q;
+        NO* aux1;
+         if(!lse_vazia(lista)){
+          q = (pesquisar(lista, elem));
+
+          aux1 = q->prox;
+          lista->prox = aux1;
+          aux1 = q;
+
+            return q;
+         }
+         else{
+            return NULL;
+         }
+ }
+
+void lse_removerDoInicio(NO **lista){
+     NO* q;
+     q = *lista;
+
+     if(lse_vazia(lista)==0){
+        *lista = q->prox;
+        lse_desalocarNo(q);
+     }
+     else{
+        printf("\nERRO: Lista vazia! \n");
+     }
+}
+
+void lse_removerValor(NO**lista, char elem){
+
+    NO* q;
+    NO* aux;
+
+    if((q = pesquisar(*lista,elem))!= NULL){
+        aux = *lista;
+       if(aux == q){
+        lse_removerDoInicio(*lista);
+       }
+       else{
+        while(aux->prox != q){
+            aux = aux->prox;
+            aux->prox = q->prox;
+            lse_desalocarNo(q);
+        }
+       }
+    }
+
+}
+
+NO* lse_inserirOrdenado(NO* lista, char elem){
+    NO *atual = lista;
+    NO *anterior = NULL;
+    NO *novo;
+
+    novo = lse_alocarNo();
+
+    if(novo!=NULL){
+        novo->info = elem;
+        novo->prox = NULL;
+        while(atual!=NULL && atual->info < elem){
+            anterior = atual;
+            atual = atual->prox;
+        }
+        if(atual == lista){ //insere no início
+            novo->prox = lista;
+            lista = novo;
+        } else{ //insere no meio ou no fim
+            anterior->prox = novo;
+            novo->prox = atual;
+        }
+        return lista;
+    }
+    else{
+        printf("\nErro ao alocar o no!");
+        return NULL;
+    }
+}
+
+void lse_exibirValores(NO **lista){
+    NO* aux;
+    aux = *lista;
+    if(lse_vazia(*lista)==0){
+        while(aux->prox!=NULL){
+            printf("%c ", aux->info);
+            aux = aux->prox;
+        }
+    }
+    else{
+        printf("\nErro. Lista vazia.");
+    }
+    lse_desalocarNo(aux);
+}
+
+void menu(){
+
+  NO* lista;
+  lse_inicializar(lista);
+  int opcao;
+  int elem;
+
+  printf("\n-----LISTA ESTÁTICA | MENU-----\n");
+  printf("\n Digite:\n");
+  printf("1 para inserir elemento de forma ordenada na lista encadeada\n");
+  printf("2 para remover elemento do início da lista\n");
+  printf("3 para remover determinado elemento da lista estática\n");
+  printf("4 para pesquisar usando método de mover para frente\n");
+  printf("5 para pesquisar usando método de transposição\n");
+  printf("6 para exibir elementos da lista\n");
+  scanf("%d", &opcao);
+
+  switch(opcao){
+  case 1:
+      printf("Digite o elemento a ser inserido ordenadamente na lista de caracteres:");
+      scanf("%c", elem);
+      lse_inserirOrdenado(lista, elem);
+      break;
+  case 2:
+      lse_removerDoInicio(lista);
+      break;
+  case 3:
+      printf("Digite o elemento a ser removido da lista de caracteres:");
+      scanf("%c", elem);
+      lse_removerValor(lista, elem);
+  case 4:
+      lse_pesquisarMovendoParaFrente(lista,elem);
+      break;
+  case 5:
+      lse_pesquisarPorTransposicao(lista,elem);
+      break;
+  case 6:
+
+      break;
+  default:
+      printf("Digite uma opção valida!");
+    }
+}
